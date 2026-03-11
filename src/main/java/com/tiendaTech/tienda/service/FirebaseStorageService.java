@@ -46,13 +46,22 @@ public class FirebaseStorageService {
         }
         return tempFile;
     }
-    private String uploadToFirebase(File file, String folder, String fileName) throws IOException {
-        BlobId blobId = BlobId.of(bucketName, storagePath + "/" + folder + "/" + fileName);
-        String mimeType = Files.probeContentType(file.toPath());
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(mimeType != null ? mimeType : "media").build();
-        storage.create(blobInfo, Files.readAllBytes(file.toPath()));
-        return storage.signUrl(blobInfo, 1825, TimeUnit.DAYS).toString();
-    }
+   private String uploadToFirebase(File file, String folder, String fileName) throws IOException {
+
+    System.out.println("BUCKET QUE ESTA USANDO LA APP: " + bucketName);
+
+    BlobId blobId = BlobId.of(bucketName, storagePath + "/" + folder + "/" + fileName);
+
+    String mimeType = Files.probeContentType(file.toPath());
+
+    BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+            .setContentType(mimeType != null ? mimeType : "media")
+            .build();
+
+    storage.create(blobInfo, Files.readAllBytes(file.toPath()));
+
+    return storage.signUrl(blobInfo, 1825, TimeUnit.DAYS).toString();
+}
     private String getFormattedNumber(long id) {
         return String.format("%014d", id);
     }
