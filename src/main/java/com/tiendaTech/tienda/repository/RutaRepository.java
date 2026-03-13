@@ -8,14 +8,14 @@ package com.tiendaTech.tienda.repository;
  *
  * @author Arianna Mora
  */
-import com.tiendaTech.tienda.domain.Usuario;
-import java.util.Optional;
+import com.tiendaTech.tienda.domain.Ruta;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
+public interface RutaRepository extends JpaRepository<Ruta, Integer> {
     
-    public Optional<Usuario> findByUsernameAndActivoTrue(String username);
+    public List<Ruta> findAllByOrderByRequiereRolAsc();
     
 }

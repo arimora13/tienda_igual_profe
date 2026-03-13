@@ -9,10 +9,7 @@ package com.tiendaTech.tienda.domain;
  * @author Arianna Mora
  */
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;
 
@@ -27,39 +24,21 @@ public class Usuario implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_usuario")
     private Integer idUsuario;
-
-    @NotBlank
-    @Column(unique = true, length = 30)
     private String username;
-
-    @Column(length = 512)
     private String password;
-
-    @Column(length = 20)
-    private String rutafImagen;
-
-    @NotBlank
-    @Column(length = 30)
     private String nombre;
-
-    @Column(length = 30)
     private String apellidos;
-
-    @Email
-    @Column(unique = true, length = 75)
     private String correo;
-
-    @Column(length = 1024)
-    private String urlImagen;
-
+    private String telefono;
+    private String rutaImagen;
     private boolean activo;
 
     // Relación Many-to-Many con la entidad Rol
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "usuario_rol",
-        joinColumns = @JoinColumn(name = "id_usuario"),
-        inverseJoinColumns = @JoinColumn(name = "id_rol")
+            name = "usuario_rol",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_rol")
     )
-    private Set<Rol> roles = new HashSet<>();
+    private Set<Rol> roles;
 }
