@@ -4,7 +4,7 @@
  */
 package com.tiendaTech.tienda;
 
-/**
+/*
  *
  * @author Arianna Mora
  */
@@ -22,10 +22,24 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+
+
 @Configuration
 public class SecurityConfig {
 
-    //Este método es quien genera el proceso de autorización...
+//    public static final String[] PUBLIC_URLS = {
+//        "/", "/index", "/fav/**", "/carrito/**", "/consultas/**", "/registro/**",
+//        "/js/**", "/webjars/**", "/login", "/acceso_denegado"
+//    };
+//    public static final String[] USUARIO_URLS = {
+//        "/facturar/carrito"
+//    };
+//    public static final String[] ADMIN_OR_VENDEDOR_URLS = {
+//        "/producto/listado", "/categoria/listado", "/usuario/listado"
+//    };
+//    public static final String[] ADMIN_URLS = {
+//        "/producto/**", "/categoria/**", "/usuario/**"
+//    };
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, @Lazy RutaService rutaService)
             throws Exception {
@@ -68,7 +82,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    //Este método será reemplazado la siguiente semana
+//    //Este método será reemplazado la siguiente semana
 //    @Bean
 //    public UserDetailsService users(PasswordEncoder passwordEncoder) {
 //        UserDetails juan = User.builder()

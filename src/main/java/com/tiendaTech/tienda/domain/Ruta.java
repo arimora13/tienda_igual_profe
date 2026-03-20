@@ -4,7 +4,7 @@
  */
 package com.tiendaTech.tienda.domain;
 
-/**
+/*
  *
  * @author Arianna Mora
  */

@@ -18,50 +18,64 @@ public class FirebaseStorageService {
     private String bucketName;
     @Value("${firebase.storage.path}")
     private String storagePath;
+    // Aquí se manejaría la inyección del cliente de Storage como un bean
     private final Storage storage;
+
     public FirebaseStorageService(Storage storage) {
         this.storage = storage;
     }
-    // ✅ CAMBIO: Integer → Long
-    public String uploadImage(MultipartFile localFile, String folder, Long id) throws IOException {
+
+    //Sube un archivo de imagen al almacenamiento de Firebase.    
+    public String uploadImage(MultipartFile localFile, String folder, Integer id) throws IOException {
         String originalName = localFile.getOriginalFilename();
         String fileExtension = "";
         if (originalName != null && originalName.contains(".")) {
             fileExtension = originalName.substring(originalName.lastIndexOf("."));
         }
+
+        // Se genera el nombre del archivo con un formato consistente.
         String fileName = "img" + getFormattedNumber(id) + fileExtension;
+
         File tempFile = convertToFile(localFile);
+
         try {
             return uploadToFirebase(tempFile, folder, fileName);
         } finally {
+            // Asegura que el archivo temporal se elimine siempre.
             if (tempFile.exists()) {
                 tempFile.delete();
             }
         }
     }
-    private File convertToFile(MultipartFile multipartFile) throws IOException {
+
+    //Convierte un MultipartFile a un archivo temporal en el servidor.
+     private File convertToFile(MultipartFile multipartFile) throws IOException {
         File tempFile = File.createTempFile("upload-", ".tmp");
         try (FileOutputStream fos = new FileOutputStream(tempFile)) {
             fos.write(multipartFile.getBytes());
         }
         return tempFile;
     }
-   private String uploadToFirebase(File file, String folder, String fileName) throws IOException {
 
-    System.out.println("BUCKET QUE ESTA USANDO LA APP: " + bucketName);
+    //Sube el archivo al almacenamiento de Firebase y genera una URL firmada.     
+    private String uploadToFirebase(File file, String folder, String fileName) throws IOException {
+        // Definimos el ID del blob y su información
+        BlobId blobId = BlobId.of(bucketName, storagePath + "/" + folder + "/" + fileName);
+        String mimeType = Files.probeContentType(file.toPath());
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(mimeType != null ? mimeType : "media").build();
 
-    BlobId blobId = BlobId.of(bucketName, storagePath + "/" + folder + "/" + fileName);
+        // Subimos el archivo. El objeto `storage` ya tiene las credenciales necesarias.
+        storage.create(blobInfo, Files.readAllBytes(file.toPath()));
 
-    String mimeType = Files.probeContentType(file.toPath());
+        // El objeto `storage` ya tiene las credenciales del servicio configuradas        
+        // Se genera la URL firmada. Ahora con una caducidad de 5 años.
+        return storage.signUrl(blobInfo, 1825, TimeUnit.DAYS).toString();
+    }
 
-    BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-            .setContentType(mimeType != null ? mimeType : "media")
-            .build();
-
-    storage.create(blobInfo, Files.readAllBytes(file.toPath()));
-
-    return storage.signUrl(blobInfo, 1825, TimeUnit.DAYS).toString();
-}
+    /**
+     * Genera un string numérico con un formato de 14 dígitos, rellenado con
+     * ceros a la izquierda.
+     */
     private String getFormattedNumber(long id) {
         return String.format("%014d", id);
     }
